@@ -2,36 +2,35 @@ namespace ToDo
 {
     public class Tarea
     {
-        private int tareaID;
-        private string descripcion;
-        private int duracion;
+        public int TareaID { get; set; }
+        public string Descripcion { get; set; }
+        private int Duracion; // Validar que esté entre 10 y 100
 
-        public int TareaID
+        public int DuracionTarea
         {
-            get => tareaID;
-            set => tareaID = value;
-        }
-        public string Descripcion
-        {
-            get => descripcion;
-            set => descripcion = value;
-        }
-        public int Duracion
-        {
-            get => duracion;
-            set
-            {
+            get => Duracion;
+            set {
                 if (value < 10 || value > 100)
                 {
-                    duracion = 0;
+                    DuracionTarea = 0;
                 }
                 else
                 {
-                    duracion = value;
+                    DuracionTarea = value;
                 }
             }
         }
         
-        
+        public Tarea(int TareaID, string Descripcion, int Duracion)
+        {
+            this.TareaID = TareaID;
+            this.Descripcion = Descripcion;
+            this.Duracion = Duracion;
+        }
+
+        public void MostrarTareas()
+        {
+            Console.WriteLine($"ID tarea:{TareaID} | Descripcion: {Descripcion} | Duracion: {Duracion} minutos");
+        }
     }
 }

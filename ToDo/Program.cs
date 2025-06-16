@@ -1,8 +1,9 @@
-﻿using System.Linq.Expressions;
-using ToDo;
+﻿using ToDo;
 
 Random rand = new Random();
 string [] descrip = { "prueba del programa", "crear nuevo proyecto de consola", "cargar datos", "subir archivos", "mostrar listas", "generar aleatorios"};
+int id, duracion, opcion;
+string descripcion;
 
 List<Tarea> TareasPendientes = new List<Tarea>();
 List<Tarea> TareasRealizadas = new List<Tarea>();
@@ -13,33 +14,28 @@ bool esValido = int.TryParse(input, out int N);
 
 for (int i = 0; i < N; i++)
 {
-    Tarea nuevaTarea = new Tarea();
-    nuevaTarea.TareaID = rand.Next(100);
-    nuevaTarea.Descripcion = descrip[rand.Next(6)];
-    nuevaTarea.Duracion = rand.Next(10, 100);
+    id = rand.Next(100);
+    descripcion = descrip[rand.Next(6)];
+    duracion = rand.Next(10, 100);
+    Tarea nuevaTarea = new Tarea(id,descripcion,duracion);
     TareasPendientes.Add(nuevaTarea);
 }
 
-int op;
+mostrarListas(TareasPendientes, "pendientes");
 
 do
 {
     Console.WriteLine("\nMenu: Presione 0-Salir del programa | 1-Marcar como realizada una tarea| 2-Buscar tarea pendiente por descripción | 3-Listar tareas pendientes y realizadas");
     input = Console.ReadLine();
-    esValido = int.TryParse(input, out op);
+    esValido = int.TryParse(input, out opcion);
 
-    switch (op)
+    switch (opcion)
     {
         case 1:
-            Console.WriteLine("Ingrese el ID de la tarea Realizada: ");
-            input = Console.ReadLine();
-            esValido = int.TryParse(input, out int tRealizadaID);
-            agregarRealizada(TareasPendientes, TareasRealizadas, tRealizadaID);
+            agregarRealizada(TareasPendientes, TareasRealizadas);
             break;
         case 2:
-            Console.WriteLine("Ingrese la palabra o frase de la descripcion: ");
-            input = Console.ReadLine();
-            buscarPendiente(TareasPendientes, input);
+            buscarPendiente(TareasPendientes);
             break;
         case 3:
             mostrarListas(TareasPendientes, "pendientes");
@@ -49,10 +45,10 @@ do
             Console.WriteLine("Saliendo del programa...");
             break;
         default:
-            Console.WriteLine("Opcion invalida");
+            Console.WriteLine("opcion invalida");
             break;
     }
-} while (op != 0);
+} while (opcion != 0);
 
 
 void mostrarListas(List<Tarea> tareas1, string tipo)
@@ -60,28 +56,44 @@ void mostrarListas(List<Tarea> tareas1, string tipo)
     Console.WriteLine("\nTareas " + tipo);
     foreach (Tarea informacion in tareas1)
     {
-        Console.WriteLine("\nTarea " + informacion.TareaID);
-        Console.WriteLine("Descripcion: " + informacion.Descripcion);
-        Console.WriteLine("Duracion: " + informacion.Duracion);
+        informacion.MostrarTareas();
     }
 }
 
-void agregarRealizada(List<Tarea> tareas1, List<Tarea> tareas2, int id)
+void agregarRealizada(List<Tarea> tareas1, List<Tarea> tareas2)
 {
-    for (int i = 0; i < tareas1.Count; i++)
+    Console.WriteLine("Ingrese el ID de la tarea Realizada: ");
+    esValido = int.TryParse(Console.ReadLine(), out int tRealizadaID);
+    bool encontrada = false;
+    if (esValido)
     {
-        if (tareas1[i].TareaID == id)
+        for (int i = 0; i < tareas1.Count; i++)
         {
-            Tarea TareaMovida = tareas1[i];
-            tareas1.Remove(TareaMovida);
-            tareas2.Add(TareaMovida);
+            if (tareas1[i].TareaID == tRealizadaID)
+            {
+                Tarea TareaMovida = tareas1[i];
+                tareas1.Remove(TareaMovida);
+                tareas2.Add(TareaMovida);
+                encontrada = true;
+                Console.WriteLine("Tarea marcada como realizada");
+            }
+        }
+        if (encontrada == false)
+        {
+            Console.WriteLine("Tarea no encontrada");
         }
     }
+    else
+    {
+        Console.WriteLine("ID invalido");
+    }
 }
 
-void buscarPendiente(List<Tarea> tareas1, string subcadena)
+void buscarPendiente(List<Tarea> tareas1)
 {
     int indice;
+    Console.WriteLine("Ingrese la palabra o frase de la descripcion: ");
+    string subcadena = Console.ReadLine();
     Console.WriteLine("Coincidencias:\n");
 
     foreach (Tarea tarea in tareas1)
@@ -89,15 +101,9 @@ void buscarPendiente(List<Tarea> tareas1, string subcadena)
         indice = tarea.Descripcion.IndexOf(subcadena);
         if (indice != -1)
         {
-            Console.WriteLine($"Tarea {tarea.TareaID}");
-            Console.WriteLine($"Descripcion: {tarea.Descripcion}");
-            Console.WriteLine($"Duracion: {tarea.Duracion}");
+            tarea.MostrarTareas();
         }
     }
 }
 
-
-string texto = "Este es un ejemplo de texto";
-string subcadena = "ejemplo";
-int indice = texto.IndexOf(subcadena);
 
